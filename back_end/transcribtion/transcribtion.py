@@ -15,12 +15,14 @@ class Transcriber():
         id=new_id
         status="Ready"
         text=""
+        path=""
         
     def transcribe(audio_path):
         status="Buisy"
         text=""
-        if os.path.exists(audio_path):
-            thred=threading.Thread(target=transcribe_audio,args=(audio_path,text))
+        path=audio_path
+        if os.path.exists(path):
+            thred=threading.Thread(target=transcribe_audio,args=(path,text))
             thred.start()
             thred.join
             status="Ready"
@@ -36,8 +38,10 @@ user_array=[]
 
 app=FastAPI()
 
-@app.get("/transcribe/{id}")
-def transcribe():                #bring file here somehow!
+@app.post("/transcribe/{id}")
+async def transcribe(file: UploadFile=File(...)):                #bring file here somehow!
+    contents=await file.read()
+    with open("audio.mp3","wb") as f: f.write(file)
     if user_array.index(id).status!="Buisy":
         user_array.index(id).transcribe(audio_path)
     return {"message": user_array.index(id).status}
@@ -60,6 +64,7 @@ def get_status():
 @app.get("/get_transcribtion/{id}")
 def get_transcribtion():
     if user_array.index(id).status!="Buisy":
+        os.remove(user_array.index(id).path)
         return {"message": user_array.index(id).text}
     return {"message": user_array.index(id).status}
     
