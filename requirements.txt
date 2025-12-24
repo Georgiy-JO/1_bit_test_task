@@ -1,0 +1,22 @@
+Install only in local environment:
+    python -m venv venv
+    source venv/bin/activate
+Use rocminfo to check GPU and CPU for models
+
+transcriber.py:
+    pip install "uvicorn[standard]"
+    pip install openai-whisper
+    pip install FastAPI
+text_analysis.py:
+    # AMD  -- model:Mixtral
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.0
+        --or pip install torch --index-url https://download.pytorch.org/whl/rocm6.0
+    pip install transformers accelerate
+    # Nvidea -- model:LLaMA-3 / just CPU -- model:some smaller models
+    pip install torch transformers accelerate
+    # to check
+    python - <<EOF
+    import torch
+    print(torch.cuda.is_available())    #true
+    print(torch.version.hip)            #non-none
+    EOF
