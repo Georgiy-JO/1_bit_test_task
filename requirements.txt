@@ -1,15 +1,20 @@
 Install only in local environment:
-    python -m venv venv
+    python -m venv venv                 #py -3.13 -m venv myenv 
     source venv/bin/activate    #linuix
     venv/bin/activate           #windows     
 
 Use rocminfo to check GPU and CPU for models
 
-transcriber.py:
+transcriber.py:     #only py 3.13 
     pip install "uvicorn[standard]"
     pip install openai-whisper
     pip install FastAPI
     pip install python-multipart
+    Go to and follow the Windows installation instructions to insatall rust.
+    pip install ffmpeg vosk pyannote.audio torch transformers numpy torchaudio silero-vad
+    pip install av faster-whisper      #FOR faster-whisper
+
+
 text_analysis.py:
     # AMD  -- model:Mixtral
     pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.0

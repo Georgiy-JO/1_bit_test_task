@@ -33,6 +33,81 @@ async def transcribe(..., background_tasks: BackgroundTasks):
 - Dockerize the app
 - Add unit tests
 
+#### Project: accurency apdate
+
+##### 1
+```Bash
+pip install ctranslate2
+pip install faster-whisper
+```
+```py
+from faster_whisper import WhisperModel
+
+model = WhisperModel("small", device="cpu", compute_type="int8_float16")
+segments, info = model.transcribe("audio.wav")
+```
+##### 2
+
+Example of preprocessing (Python + ffmpeg)
+```py
+import subprocess
+cmd = [
+    "ffmpeg",
+    "-i", "input.wav",
+    "-ac", "1",  # Mono
+    "-ar", "16000",  # 16kHz
+    "-af", "loudnorm",  # Normalize volume
+    "processed.wav"
+]
+subprocess.run(cmd)
+```
+You can also add noise reduction steps with specialized libs (rnnoise, noisered etc.).
+
+##### 3
+```py
+import torch
+from silero_vad import VADIterator
+
+audio = load_audio("processed.wav")  # 16k, mono
+vad = VADIterator(torch.tensor(audio), model, threshold=0.7)
+
+segments = []
+for speech_frame in vad:
+    if speech_frame: segments.append(speech_frame)
+```
+
+##### 4
+```json
+[
+  {"speaker": "A", "text": "Hello! How are you?"},
+  {"speaker": "B", "text": "I’m good, thank you."}
+]
+```
+##### 5 
+```py
+segments, info = model.transcribe(
+    "audio.wav",
+    beam_size=5,
+    temperature=[0.0, 0.2, 0.4],
+    vad_filter=True,   # if using faster-whisper built-in VAD
+)
+```
+##### 6 
+- Option A (lightweight, acceptable)
+    - Use pause lengths + VAD gaps
+    - LLM guesses speaker turns conservatively
+    - Works OK for:
+        - interviews
+        - meetings with clear turn-taking
+
+- Option B (better, still feasible)
+    - Use a diarization model before ASR:
+        - pyannote.audio (CPU works, slowish)
+        - Output: (start, end, speaker_id)
+    - Then:
+        - Map ASR segments → speaker_id
+        - LLM just formats, not guesses
+
 ### Text analusis
 
 #### Road map
