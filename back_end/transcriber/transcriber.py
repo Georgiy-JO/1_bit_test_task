@@ -24,6 +24,7 @@ class Transcriber():
         
     def _transcribe_worker(self):
         try:
+            print("here\n")
             result = model.transcribe(self.path)
             with self.lock:
                 self.text = result["text"]

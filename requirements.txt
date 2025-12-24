@@ -1,12 +1,15 @@
 Install only in local environment:
     python -m venv venv
-    source venv/bin/activate
+    source venv/bin/activate    #linuix
+    venv/bin/activate           #windows     
+
 Use rocminfo to check GPU and CPU for models
 
 transcriber.py:
     pip install "uvicorn[standard]"
     pip install openai-whisper
     pip install FastAPI
+    pip install python-multipart
 text_analysis.py:
     # AMD  -- model:Mixtral
     pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.0
