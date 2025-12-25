@@ -10,6 +10,71 @@ from typing import Dict
 from enum import Enum
 import threading
 import os
+import wave
+import json
+
+from faster_whisper import WhisperModel
+from vosk import Model, KaldiRecognizer
+
+
+
+
+model = WhisperModel("medium", device="cpu", compute_type="int8_float16")
+
+def transcribe_whisper(segment_file):
+    segments, info = model.transcribe(
+        segment_file,
+        beam_size=5,
+        temperature=[0.0, 0.2, 0.4]
+    )
+    text = " ".join([seg.text for seg in segments])
+    return text
+
+# Transcribe all B segments
+whisper_transcripts = []
+for i, seg_file in enumerate(B_segment_files):
+    text = transcribe_whisper(seg_file)
+    whisper_transcripts.append({
+        "speaker": speaker_segments[i]['speaker'],
+        "start": speaker_segments[i]['start'],
+        "end": speaker_segments[i]['end'],
+        "text": text
+    })
+
+
+
+
+
+def transcribe_vosk(audio_file, model_path="vosk-model-small-ru"):
+    wf = wave.open(audio_file, "rb")
+    model = Model(model_path)
+    rec = KaldiRecognizer(model, wf.getframerate())
+    
+    results = []
+    while True:
+        data = wf.readframes(4000)
+        if len(data) == 0:
+            break
+        if rec.AcceptWaveform(data):
+            results.append(json.loads(rec.Result()))
+    results.append(json.loads(rec.FinalResult()))
+    # Concatenate text
+    text = " ".join([r.get("text", "") for r in results])
+    return text
+
+# Example for all A segments
+vosk_transcripts = []
+for i, seg in enumerate(vad_segments):
+    filename = f"A_segment_{i}.wav"  # Assuming you split A like B
+    text = transcribe_vosk(filename)
+    vosk_transcripts.append({"speaker": seg['speaker'], "start": seg['start'], "end": seg['end'], "text": text})
+
+
+
+
+
+
+
 
 class Transcriber():
     class Status_code(Enum):

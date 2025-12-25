@@ -11,9 +11,11 @@ transcriber.py:     #only py 3.13
     pip install FastAPI
     pip install python-multipart
     Go to and follow the Windows installation instructions to insatall rust.
-    pip install ffmpeg vosk pyannote.audio torch transformers numpy torchaudio silero-vad
-    pip install av faster-whisper      #FOR faster-whisper
+    pip install ffmpeg vosk pyannote.audio torch transformers numpy torchaudio #silero-vad
+    pip install speechbrain pydub numpy scipy
 
+    pip install av faster-whisper      #FOR faster-whisper
+    install ffmpeg (https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip) for windows into some project folder and 
 
 text_analysis.py:
     # AMD  -- model:Mixtral

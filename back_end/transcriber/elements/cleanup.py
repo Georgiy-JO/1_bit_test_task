@@ -1,6 +1,5 @@
 import subprocess
 import os
-# import service    #for windows
 
 def cleanup_denoise(input_file, output_file): # Noise cancel + normalization
     cmd = [
@@ -33,4 +32,6 @@ def cleanup_bisic_wrapper(input_file):
     cleanup_basic(input_file,new_path)
     os.remove(input_file)
     return new_path
+
 # cleanup_basic("/home/jack_oneill/Programming/1bit/test_data/call_conv_0.mp3", "2.mp3")
+# cleanup_basic("D:/georgy_jo/test_data/call_conv_0.mp3", "2.mp3")
