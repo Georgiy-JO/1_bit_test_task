@@ -33,3 +33,52 @@ text_analysis.py:
     print(torch.cuda.is_available())    #true
     print(torch.version.hip)            #non-none
     EOF
+
+
+
+Install these via pip install <package> in a Python environment (e.g., virtualenv). All are free/open-source and run locally. Use GPU if NVIDIA CUDA installed (torch will detect).
+
+torch (PyTorch): Core ML framework for models like Silero, SpeechBrain, Whisper. pip install torch torchaudio (torchaudio for audio utils).
+Why? Enables GPU acceleration; essential for local AI.
+
+transformers: Hugging Face library for loading/pre-trained models like T5.
+pip install transformers
+Why? Simplifies LLM pipeline; community standard for NLP.
+
+faster-whisper: Optimized Whisper implementation (uses CTranslate2 backend for speed).
+pip install faster-whisper
+Why? 2-4x faster than original Whisper; local inference.
+
+vosk-api: Vosk ASR toolkit (lightweight, offline).
+pip install vosk
+Why? Fast CPU-based transcription; download free models separately.
+
+speechbrain: For speaker diarization embeddings.
+pip install speechbrain
+Why? Pre-trained speaker recognition; free alternative to pyannote.
+
+librosa: Audio loading/processing.
+pip install librosa
+Why? Handles various formats; resamples audio.
+
+soundfile: For writing/reading audio buffers.
+pip install soundfile
+Why? Efficient for in-memory audio (used with Vosk).
+
+numpy: Array ops.
+pip install numpy
+Why? Required by most audio/ML libs.
+
+scikit-learn: For clustering in diarization.
+pip install scikit-learn
+Why? Simple AgglomerativeClustering.
+
+ffmpeg: System install (not pip): Download from ffmpeg.org and add to PATH.
+Why? Audio cleanup/conversion; RNNoise for noise reduction.
+
+
+Additionally:
+
+Download Vosk model: vosk-model-ru-0.42 from alphacephei.com/vosk/models, unzip to folder.
+If using RNNoise: Download rnnoise_model.pth from GitHub (gregor/rnnoise-models) and place in path.
+For GPU: Install CUDA toolkit if NVIDIA GPU (torch will use it automatically).
