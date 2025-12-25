@@ -8,9 +8,11 @@ import elements.finalizers
 from datetime import datetime
 from typing import Dict
 from enum import Enum
+import threading
+import os
 
 class Transcriber():
-    class Status_codes(Enum):
+    class Status_code(Enum):
         READY=0
         ERROR=1
         BUSY=2
@@ -19,9 +21,9 @@ class Transcriber():
         ERROR="Error accured during transcribing process"
         BUSY="Transcribing in progress"
     def __init__(self):
-        self.status=Transcriber.Status.READY
-        self.text=""
-        self.path="Nothing is transcribed."
+        self.status=Transcriber.Status_code.READY
+        self.text="Nothing is transcribed."
+        self.path=""
         self.lock = threading.Lock() 
         
     def _transcribe_worker(self):
@@ -37,16 +39,24 @@ class Transcriber():
 
     def transcribe(self,audio_path):
         with self.lock:
-            if self.status==Transcriber.Status.BUSY:
+            if self.status==Transcriber.Status_code.BUSY:
                 return
-            self.status=Transcriber.Status.BUSY
+            self.status=Transcriber.Status_code.BUSY
             self.text=""
             self.path=audio_path
-            if os.path.exists(self.path):
-                thred=threading.Thread(target=self._transcribe_worker,daemon=True)
-                thred.start()
-            else:
-                self.status=Transcriber.Status.READY
+            try:
+                self.path=elements.cleanup.cleanup_bisic_wrapper(self.path)
+                if os.path.exists(self.path):
+                    #here
+                    thred=threading.Thread(target=self._transcribe_worker,daemon=True)
+                    thred.start()
+                else:
+                    self.status=Transcriber.Status_code.ERROR
+                    self.text = "Transcribing file can't be found."
+            except Exception as e:
+                self.status=Transcriber.Status_code.ERROR
+                self.text = ""
+
 
 
 

@@ -1,10 +1,8 @@
 import subprocess
-import service
+import os
+# import service    #for windows
 
-def cleanup_denoise(input_file, output_file):
-    """
-    Noise cancel + normalization
-    """
+def cleanup_denoise(input_file, output_file): # Noise cancel + normalization
     cmd = [
         "ffmpeg",
         "-i", input_file,
@@ -15,7 +13,7 @@ def cleanup_denoise(input_file, output_file):
         output_file
     ]
     subprocess.run(cmd, check=True)
-    print(f"Noise-cleaned file saved to {output_file}")
+    # print(f"Noise-cleaned file saved to {output_file}")
 
 
 def cleanup_basic(input_file, output_file):
@@ -28,7 +26,11 @@ def cleanup_basic(input_file, output_file):
         output_file
     ]
     subprocess.run(cmd, check=True)
-    print(f"Basic-cleaned file saved to {output_file}")
+    # print(f"Basic-cleaned file saved to {output_file}")
 
-cleanup_denoise("D:/od_ga/test_data/call_conv_0.mp3", "1.mp3")
-cleanup_basic("D:/od_ga/test_data/call_conv_0.mp3", "2.mp3")
+def cleanup_bisic_wrapper(input_file):
+    new_path=f"{os.path.splitext(input_file)[0]}_new_{os.path.splitext(input_file)[1]}"
+    cleanup_basic(input_file,new_path)
+    os.remove(input_file)
+    return new_path
+# cleanup_basic("/home/jack_oneill/Programming/1bit/test_data/call_conv_0.mp3", "2.mp3")
