@@ -12,8 +12,11 @@ transcriber.py:     #only py 3.13
     pip install python-multipart
     Go to and follow the Windows installation instructions to insatall rust.
     pip install ffmpeg vosk pyannote.audio torch transformers numpy torchaudio #silero-vad
-    pip install speechbrain pydub numpy scipy
-
+    pip install  pydub numpy scipy 
+    python -m pip install --upgrade torch torchaudio --upgrade-strategy only-if-needed
+                            # pip install speechbrain #FOR LINUX
+                            # FOR WIN Go to the HuggingFace page: https://huggingface.co/speechbrain/spkrec-ecapa-voxceleb
+                            #     Download all files (hyperparams.yaml, model.ckpt, etc.).
     pip install av faster-whisper      #FOR faster-whisper
     install ffmpeg (https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip) for windows into some project folder and 
 
