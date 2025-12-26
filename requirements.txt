@@ -38,7 +38,8 @@ text_analysis.py:
 
 Install these via pip install <package> in a Python environment (e.g., virtualenv). All are free/open-source and run locally. Use GPU if NVIDIA CUDA installed (torch will detect).
 
-torch (PyTorch): Core ML framework for models like Silero, SpeechBrain, Whisper. pip install torch torchaudio (torchaudio for audio utils).
+torch (PyTorch): Core ML framework for models like Silero, SpeechBrain, Whisper. 
+pip install torch torchaudio (torchaudio for audio utils).
 Why? Enables GPU acceleration; essential for local AI.
 
 transformers: Hugging Face library for loading/pre-trained models like T5.

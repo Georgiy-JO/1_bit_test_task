@@ -2,3 +2,5 @@ myenv
 __pycache__
 venv
 back_end/transcriber/elements/tmp/call_conv_0.mp3
+back_end/transcriber/models/vosk
+back_end/transcriber/pretrained_models
