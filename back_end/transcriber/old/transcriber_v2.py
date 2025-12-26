@@ -48,10 +48,16 @@ from typing import List, Dict
 from faster_whisper import WhisperModel
 from vosk import Model as VoskModel, KaldiRecognizer
 from speechbrain.pretrained import SpeakerRecognition  # For diarization embeddings
+from speechbrain.utils.fetching import LocalStrategy
 from transformers import pipeline
 import soundfile as sf
 import io
 import gc  # For memory cleanup
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ENV_DIR=os.path.abspath(os.path.join(BASE_DIR, "..", "..", "venv"))
+ffmpeg_path = os.path.abspath(os.path.join(ENV_DIR, "ffmpeg", "bin", "ffmpeg.exe"))
+
 
 # Global models- load once for efficiency (community tip: load at init to avoid per-call overhead)
 device ="cpu" # ="cuda" if torch.cuda.is_available() else "cpu"
@@ -70,7 +76,7 @@ except Exception as e:
 # SpeechBrain for speaker embeddings (free, pre-trained on VoxCeleb)
 try:
     print("[INIT] Loading SpeechBrain speaker encoder...")
-    speaker_model = SpeakerRecognition.from_hparams(source="speechbrain/spkrec-ecapa-voxceleb", savedir="pretrained_models")
+    speaker_model = SpeakerRecognition.from_hparams(source="speechbrain/spkrec-ecapa-voxceleb", savedir="pretrained_models", local_strategy=LocalStrategy.COPY_SKIP_CACHE)
     print("Loaded SpeechBrain.")
 except Exception as e:
     print(f"Error loading SpeechBrain: {e}")
@@ -108,16 +114,32 @@ except Exception as e:
 
 
 def cleanup_audio(input_file: str, output_file: str = "cleaned_audio.wav") -> str:
+    print(f"[CLEANUP] Input file: {os.path.abspath(input_file)}")
+    if not os.path.exists(input_file):
+        raise FileNotFoundError(f"Input audio file not found: {input_file}")
+    if not ffmpeg_path:
+        raise RuntimeError("ffmpeg not found. Install FFmpeg and add to PATH (or place ffmpeg.exe in script folder).")
     # add "-af", "arnndn=m=rnnoise_model.pth",      #noise reduction
     cmd = [
-        "ffmpeg",
+        ffmpeg_path,
         "-i", input_file,
         "-ac", "1",
         "-ar", "16000",
         "-y", output_file
     ]
     # Add pipes to avoid hangs
-    subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        subprocess.run(cmd, 
+            check=True,
+            capture_output=True,
+            text=True,
+            shell=True)
+        print("[CLEANUP] Success")
+    except subprocess.CalledProcessError as e:
+        print(f"FFmpeg failed (code {e.returncode})")
+        print("STDOUT:", e.stdout)
+        print("STDERR:", e.stderr)
+        raise
     return output_file
 
 def vad_and_diarize(audio_file: str) -> List[Dict]:
@@ -272,4 +294,4 @@ def transcribe_audio(input_audio: str, output_json: str = "transcript.json", use
 
 # Usage example
 if __name__ == "__main__":
-    transcribe_audio("call_conv_0.mp3")  # Replace with input
+    transcribe_audio("clien_example.m4a")  # Replace with input
